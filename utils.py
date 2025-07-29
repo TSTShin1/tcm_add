@@ -15,22 +15,25 @@ def pad(x, max_len):
 
 def read_metadata(dir_meta, is_eval=False):
     d_meta = {}
-    file_list=[]
+    file_list = []
     with open(dir_meta, 'r') as f:
-         l_meta = f.readlines()
-    
-    if (is_eval):
+        l_meta = f.readlines()
+
+    if is_eval:
         for line in l_meta:
-            key= line.strip()
-            file_list.append(key)
+            parts = line.strip().split()
+            file_path = parts[1]
+            file_list.append(file_path)
         return file_list
     else:
         for line in l_meta:
-             _,key,_,_,label = line.strip().split()
-             
-             file_list.append(key)
-             d_meta[key] = 1 if label == 'bonafide' else 0
-        return d_meta,file_list
+            parts = line.strip().split()
+            if len(parts) != 3:
+                continue
+            _, file_path, label = parts
+            file_list.append(file_path)
+            d_meta[file_path] = 1 if label == 'bonafide' else 0
+        return d_meta, file_list
     
 def reproducibility(random_seed, args=None):                                  
     torch.manual_seed(random_seed)
