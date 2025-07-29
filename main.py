@@ -253,25 +253,42 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr,weight_decay=args.weight_decay)
      
     # define train dataloader
-    label_trn, files_id_train = read_metadata( dir_meta =  os.path.join(args.protocols_path+'LA/{}_cm_protocols/{}.cm.train.trn.txt'.format(prefix,prefix_2019)), is_eval=False)
-    print('no. of training trials',len(files_id_train))
-    
-    train_set=Dataset_train(args,list_IDs = files_id_train,labels = label_trn,base_dir = os.path.join(args.database_path+'LA/{}_{}_train/'.format(prefix_2019.split('.')[0],args.track)),algo=args.algo)
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers = 10, shuffle=True,drop_last = True)
-    
+    label_trn, files_id_train = read_metadata(
+    dir_meta=os.path.join(args.protocols_path, 'train.txt'),
+    is_eval=False
+    )
+    print('no. of training trials', len(files_id_train))
+
+    # Tạo dataset & dataloader cho training
+    train_set = Dataset_train(
+        args,
+        list_IDs=files_id_train,
+        labels=label_trn,
+        base_dir=os.path.join(args.database_path, 'train_set'),
+        algo=args.algo
+    )
+    train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=10, shuffle=True, drop_last=True)
+
     del train_set, label_trn
-    
-    # define validation dataloader
-    labels_dev, files_id_dev = read_metadata( dir_meta =  os.path.join(args.protocols_path+'LA/{}_cm_protocols/{}.cm.dev.trl.txt'.format(prefix,prefix_2019)), is_eval=False)
-    print('no. of validation trials',len(files_id_dev))
 
-    dev_set = Dataset_train(args,list_IDs = files_id_dev,
-		    labels = labels_dev,
-		    base_dir = os.path.join(args.database_path+'LA/{}_{}_dev/'.format(prefix_2019.split('.')[0],args.track)), algo=args.algo)
+    # Đọc dev metadata từ file txt mới
+    labels_dev, files_id_dev = read_metadata(
+        dir_meta=os.path.join(args.protocols_path, 'dev.txt'),
+        is_eval=False
+    )
+    print('no. of validation trials', len(files_id_dev))
 
+    # Tạo dataset & dataloader cho validation
+    dev_set = Dataset_train(
+        args,
+        list_IDs=files_id_dev,
+        labels=labels_dev,
+        base_dir=os.path.join(args.database_path, 'dev_set'),
+        algo=args.algo
+    )
     dev_loader = DataLoader(dev_set, batch_size=8, num_workers=10, shuffle=False)
-    del dev_set,labels_dev
 
+    del dev_set, labels_dev
     
     ##################### Training and validation #####################
     num_epochs = args.num_epochs
