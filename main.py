@@ -10,6 +10,8 @@ from utils import reproducibility
 from utils import read_metadata
 import numpy as np
 from tqdm import tqdm
+import datetime
+from torch.utils.tensorboard import SummaryWriter
 
 def evaluate_accuracy(dev_loader, model, device):
     val_loss = 0.0
@@ -98,6 +100,7 @@ def train_epoch(train_loader, model, lr,optim, device):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Conformer-W2V')
+    
     # Dataset
     parser.add_argument('--database_path', type=str, default='ASVspoof_database/', help='Change this to user\'s full directory address of LA database (ASVspoof2019- for training & development (used as validation), ASVspoof2021 for evaluation scores). We assume that all three ASVspoof 2019 LA train, LA dev and ASVspoof2021 LA eval data folders are in the same database_path directory.')
     '''
@@ -144,6 +147,7 @@ if __name__ == '__main__':
                         help='Comment to describe the saved model')
     parser.add_argument('--comment_eval', type=str, default=None,
                         help='Comment to describe the saved scores')
+    parser.add_argument("--log_dir", type=str, default="logs", help="The directory for the logs.")
     
     #Train
     parser.add_argument('--train', default=True, type=lambda x: (str(x).lower() in ['true', 'yes', '1']),
@@ -211,7 +215,7 @@ if __name__ == '__main__':
  
     #make experiment reproducible
     reproducibility(args.seed, args)
-    
+    device = torch.device(f"cuda:{args.gpu_id}" if torch.cuda.is_available() else "cpu")
     track = args.track
     n_mejores=args.n_mejores_loss
 
@@ -254,10 +258,28 @@ if __name__ == '__main__':
     #set Adam optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr,weight_decay=args.weight_decay)
     
+    log_dir = os.path.join(args.log_dir, args.foldername)
+    os.makedirs(log_dir, exist_ok=True)
+    
+    # get current time
+    current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    log_dir = os.path.join(log_dir, current_time)
+    os.makedirs(log_dir, exist_ok=True)
+    
+    # Create the summary writer
+    writer = SummaryWriter(log_dir=log_dir)
+    
+    # Save config for reproducibility
+    with open(os.path.join(log_dir, "config.json"), "w") as f:
+        f.write(str(vars(args)))
+    
+    checkpoint_dir = os.path.join(log_dir, "checkpoints")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    
     # Resume training from checkpoint if specified
     if args.resume_checkpoint is not None:
         print(f"Loading checkpoint from {args.resume_checkpoint}")
-        checkpoint = torch.load(args.resume_checkpoint, map_location='cpu')
+        checkpoint = torch.load(args.resume_checkpoint, map_location=device)
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         start_epoch = checkpoint['epoch'] + 1
@@ -337,6 +359,14 @@ if __name__ == '__main__':
             if epoch>args.num_epochs:
                 break
         print('Total epochs: ' + str(epoch) +'\n')
+        
+    checkpoint_for_resume = {
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+        }
+    torch.save(checkpoint_for_resume, os.path.join(checkpoint_dir, f"newest_checkpoint_for_resume.pth"))
+    print('Epoch {}: Saved newest end of epoch checkpoint for resuming training purpose as newest_checkpoint_for_resume.pth,'.format(epoch))
 
 
     print('######## Eval ########')
