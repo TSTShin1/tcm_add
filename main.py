@@ -356,18 +356,16 @@ if __name__ == '__main__':
             print('n-best loss:', bests)
             #torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
             epoch+=1
+            checkpoint_for_resume = {
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+            }
+            torch.save(checkpoint_for_resume, os.path.join(checkpoint_dir, f"newest_checkpoint_for_resume.pth"))
+            print('Epoch {}: Saved newest end of epoch checkpoint for resuming training purpose as newest_checkpoint_for_resume.pth,'.format(epoch))
             if epoch>args.num_epochs:
                 break
         print('Total epochs: ' + str(epoch) +'\n')
-        
-    checkpoint_for_resume = {
-            'epoch': epoch,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-        }
-    torch.save(checkpoint_for_resume, os.path.join(checkpoint_dir, f"newest_checkpoint_for_resume.pth"))
-    print('Epoch {}: Saved newest end of epoch checkpoint for resuming training purpose as newest_checkpoint_for_resume.pth,'.format(epoch))
-
 
     print('######## Eval ########')
     if args.average_model:
