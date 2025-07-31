@@ -148,6 +148,8 @@ if __name__ == '__main__':
     #Train
     parser.add_argument('--train', default=True, type=lambda x: (str(x).lower() in ['true', 'yes', '1']),
                     help='Whether to train the model')
+    parser.add_argument('--resume_checkpoint', type=str, default=None,
+                    help='Path to checkpoint file to resume training from (e.g., checkpoints/model_last.pth)')
     #Eval
     parser.add_argument('--n_mejores_loss', type=int, default=5, help='save the n-best models')
     parser.add_argument('--average_model', default=True, type=lambda x: (str(x).lower() in ['true', 'yes', '1']),
@@ -251,6 +253,16 @@ if __name__ == '__main__':
 
     #set Adam optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr,weight_decay=args.weight_decay)
+    
+    # Resume training from checkpoint if specified
+    if args.resume_checkpoint is not None:
+        print(f"Loading checkpoint from {args.resume_checkpoint}")
+        checkpoint = torch.load(args.resume_checkpoint, map_location='cpu')
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        start_epoch = checkpoint['epoch'] + 1
+    else:
+        start_epoch = 0
      
     # define train dataloader
     label_trn, files_id_train = read_metadata(
@@ -322,7 +334,7 @@ if __name__ == '__main__':
             print('n-best loss:', bests)
             #torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
             epoch+=1
-            if epoch>74:
+            if epoch>args.num_epochs:
                 break
         print('Total epochs: ' + str(epoch) +'\n')
 
