@@ -156,10 +156,10 @@ if __name__ == '__main__':
                     help='Path to checkpoint file to resume training from (e.g., checkpoints/model_last.pth)')
     parser.add_argument("--foldername", type=str, default="0629_SE_algo8_Tmax4", help="The foldername to use.")
     #Eval
-    parser.add_argument('--n_mejores_loss', type=int, default=5, help='save the n-best models')
+    parser.add_argument('--n_mejores_loss', type=int, default=1, help='save the n-best models')
     parser.add_argument('--average_model', default=True, type=lambda x: (str(x).lower() in ['true', 'yes', '1']),
                     help='Whether average the weight of the n_best epochs')
-    parser.add_argument('--n_average_model', default=5, type=int)
+    parser.add_argument('--n_average_model', default=1, type=int)
 
     ##===================================================Rawboost data augmentation ======================================================================#
 
