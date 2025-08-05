@@ -327,7 +327,7 @@ if __name__ == '__main__':
     ##################### Training and validation #####################
     num_epochs = args.num_epochs
     not_improving=0
-    epoch=0
+    epoch=start_epoch
     bests=np.ones(n_mejores,dtype=float)*float('inf')
     best_loss=float('inf')
     if args.train:
@@ -403,7 +403,7 @@ if __name__ == '__main__':
 
         eval_set = Dataset_eval(
             list_IDs=file_eval,
-            base_dir=args.database_path,
+            base_dir=os.path.joint(args.database_path, 'dev_set'),
             track='LA')  # Nếu class Dataset_eval yêu cầu
 
         produce_evaluation_file(
