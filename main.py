@@ -403,7 +403,7 @@ if __name__ == '__main__':
 
         eval_set = Dataset_eval(
             list_IDs=file_eval,
-            base_dir=os.path.joint(args.database_path, 'dev_set'),
+            base_dir=os.path.join(args.database_path, 'dev_set'),
             track='LA')  # Nếu class Dataset_eval yêu cầu
 
         produce_evaluation_file(
