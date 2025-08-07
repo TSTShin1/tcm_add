@@ -282,7 +282,7 @@ if __name__ == '__main__':
         checkpoint = torch.load(args.resume_checkpoint, map_location=device)
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        start_epoch = checkpoint['epoch'] + 1
+        start_epoch = checkpoint['epoch']
     else:
         start_epoch = 0
      
