@@ -368,25 +368,25 @@ if __name__ == '__main__':
     #     print('Total epochs: ' + str(epoch) +'\n')
 
     print('######## Eval ########')
-    if args.average_model:
-        sdl=[]
-        model.load_state_dict(torch.load(os.path.join(best_save_path, 'best_{}.pth'.format(0))))
-        print('Model loaded : {}'.format(os.path.join(best_save_path, 'best_{}.pth'.format(0))))
-        sd = model.state_dict()
-        for i in range(1,args.n_average_model):
-            model.load_state_dict(torch.load(os.path.join(best_save_path, 'best_{}.pth'.format(i))))
-            print('Model loaded : {}'.format(os.path.join(best_save_path, 'best_{}.pth'.format(i))))
-            sd2 = model.state_dict()
-            for key in sd:
-                sd[key]=(sd[key]+sd2[key])
-        for key in sd:
-            sd[key]=(sd[key])/args.n_average_model
-        model.load_state_dict(sd)
-        torch.save(model.state_dict(), os.path.join(best_save_path, 'avg_5_best_{}.pth'.format(i)))
-        print('Model loaded average of {} best models in {}'.format(args.n_average_model, best_save_path))
-    else:
-        model.load_state_dict(torch.load(os.path.join(model_save_path, 'best.pth')))
-        print('Model loaded : {}'.format(os.path.join(model_save_path, 'best.pth')))
+    # if args.average_model:
+    #     sdl=[]
+    #     model.load_state_dict(torch.load(os.path.join(best_save_path, 'best_{}.pth'.format(0))))
+    #     print('Model loaded : {}'.format(os.path.join(best_save_path, 'best_{}.pth'.format(0))))
+    #     sd = model.state_dict()
+    #     for i in range(1,args.n_average_model):
+    #         model.load_state_dict(torch.load(os.path.join(best_save_path, 'best_{}.pth'.format(i))))
+    #         print('Model loaded : {}'.format(os.path.join(best_save_path, 'best_{}.pth'.format(i))))
+    #         sd2 = model.state_dict()
+    #         for key in sd:
+    #             sd[key]=(sd[key]+sd2[key])
+    #     for key in sd:
+    #         sd[key]=(sd[key])/args.n_average_model
+    #     model.load_state_dict(sd)
+    #     torch.save(model.state_dict(), os.path.join(best_save_path, 'avg_5_best_{}.pth'.format(i)))
+    #     print('Model loaded average of {} best models in {}'.format(args.n_average_model, best_save_path))
+    # else:
+    model.load_state_dict(torch.load(os.path.join(model_save_path, 'best.pth')))
+    print('Model loaded : {}'.format(os.path.join(model_save_path, 'best.pth')))
 
     eval_tracks=['LA', 'DF']
     if args.comment_eval:
