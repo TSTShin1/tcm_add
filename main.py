@@ -306,23 +306,23 @@ if __name__ == '__main__':
     # del train_set, label_trn
 
     # Đọc dev metadata từ file txt mới
-    labels_dev, files_id_dev = read_metadata(
-        dir_meta=os.path.join(args.protocols_path, 'dev.txt'),
-        is_eval=False
-    )
-    print('no. of validation trials', len(files_id_dev))
+    # labels_dev, files_id_dev = read_metadata(
+    #     dir_meta=os.path.join(args.protocols_path, 'dev.txt'),
+    #     is_eval=False
+    # )
+    # print('no. of validation trials', len(files_id_dev))
 
-    # Tạo dataset & dataloader cho validation
-    dev_set = Dataset_train(
-        args,
-        list_IDs=files_id_dev,
-        labels=labels_dev,
-        base_dir=os.path.join(args.database_path, 'dev_set'),
-        algo=args.algo
-    )
-    dev_loader = DataLoader(dev_set, batch_size=1, num_workers=10, shuffle=False)
+    # # Tạo dataset & dataloader cho validation
+    # dev_set = Dataset_train(
+    #     args,
+    #     list_IDs=files_id_dev,
+    #     labels=labels_dev,
+    #     base_dir=os.path.join(args.database_path, 'dev_set'),
+    #     algo=args.algo
+    # )
+    # dev_loader = DataLoader(dev_set, batch_size=1, num_workers=10, shuffle=False)
 
-    del dev_set, labels_dev
+    # del dev_set, labels_dev
     
     # ##################### Training and validation #####################
     # num_epochs = args.num_epochs
