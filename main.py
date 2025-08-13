@@ -43,7 +43,7 @@ def evaluate_accuracy(dev_loader, model, device):
 
 
 def produce_evaluation_file(dataset, model, device, save_path):
-    data_loader = DataLoader(dataset, batch_size=10, shuffle=False, drop_last=False)
+    data_loader = DataLoader(dataset, batch_size=1, shuffle=False, drop_last=False)
     model.eval()
     fname_list = []
     score_list = []
@@ -320,7 +320,7 @@ if __name__ == '__main__':
         base_dir=os.path.join(args.database_path, 'dev_set'),
         algo=args.algo
     )
-    dev_loader = DataLoader(dev_set, batch_size=8, num_workers=10, shuffle=False)
+    dev_loader = DataLoader(dev_set, batch_size=1, num_workers=10, shuffle=False)
 
     del dev_set, labels_dev
     
@@ -388,26 +388,37 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(os.path.join(model_save_path, 'best.pth')))
     print('Model loaded : {}'.format(os.path.join(model_save_path, 'best.pth')))
 
-    eval_tracks=['LA', 'DF']
+    # Eval track (có thể giữ nguyên nếu không dùng)
+    eval_tracks = ['LA', 'DF']
     if args.comment_eval:
         model_tag = model_tag + '_{}'.format(args.comment_eval)
 
-    score_path = 'Scores/LA/{}.txt'.format(model_tag)
+    score_path = 'Scores/LA/{}_private_test.txt'.format(model_tag)
 
     if not os.path.exists(score_path):
-        file_eval = read_metadata(
-            dir_meta=os.path.join(args.protocols_path, 'dev.txt'),
-            is_eval=True)
+        # Đọc file private_test_vlsp.txt
+        file_eval = []
+        with open(os.path.join(args.protocols_path, 'private_test_vlsp.txt'), 'r') as f:
+            for line in f:
+                parts = line.strip().split()
+                if len(parts) != 2:
+                    continue
+                audio_b = parts[1]  # chỉ lấy cột thứ 2
+                file_eval.append(audio_b)
 
         print('no. of eval trials', len(file_eval))
 
+        # Tạo dataset eval cho private test
         eval_set = Dataset_eval(
             list_IDs=file_eval,
-            base_dir=os.path.join(args.database_path, 'dev_set'),
-            track='LA')  # Nếu class Dataset_eval yêu cầu
+            base_dir=args.database_path,  # thư mục chứa wav
+            track='LA'
+        )
 
+        # Chạy evaluation
         produce_evaluation_file(
             eval_set, model, device,
-            score_path)
+            score_path
+        )
     else:
         print('Score file already exists')
