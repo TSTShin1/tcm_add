@@ -324,48 +324,48 @@ if __name__ == '__main__':
 
     del dev_set, labels_dev
     
-    ##################### Training and validation #####################
-    num_epochs = args.num_epochs
-    not_improving=0
-    epoch=start_epoch
-    bests=np.ones(n_mejores,dtype=float)*float('inf')
-    best_loss=float('inf')
-    if args.train:
-        for i in range(n_mejores):
-            np.savetxt( os.path.join(best_save_path, 'best_{}.pth'.format(i)), np.array((0,0)))
-        while not_improving<args.num_epochs:
-            print('######## Epoca {} ########'.format(epoch))
-            train_epoch(train_loader, model, args.lr, optimizer, device)
-            val_loss = evaluate_accuracy(dev_loader, model, device)
-            if val_loss<best_loss:
-                best_loss=val_loss
-                torch.save(model.state_dict(), os.path.join(model_save_path, 'best.pth'))
-                print('New best epoch')
-                not_improving=0
-            else:
-                not_improving+=1
-            for i in range(n_mejores):
-                if bests[i]>val_loss:
-                    for t in range(n_mejores-1,i,-1):
-                        bests[t]=bests[t-1]
-                        os.system('mv {}/best_{}.pth {}/best_{}.pth'.format(best_save_path, t-1, best_save_path, t))
-                    bests[i]=val_loss
-                    torch.save(model.state_dict(), os.path.join(best_save_path, 'best_{}.pth'.format(i)))
-                    break
-            print('\n{} - {}'.format(epoch, val_loss))
-            print('n-best loss:', bests)
-            #torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
-            epoch+=1
-            checkpoint_for_resume = {
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-            }
-            torch.save(checkpoint_for_resume, os.path.join(checkpoint_dir, f"newest_checkpoint_for_resume.pth"))
-            print('Epoch {}: Saved newest end of epoch checkpoint for resuming training purpose as newest_checkpoint_for_resume.pth,'.format(epoch))
-            if epoch>args.num_epochs:
-                break
-        print('Total epochs: ' + str(epoch) +'\n')
+    # ##################### Training and validation #####################
+    # num_epochs = args.num_epochs
+    # not_improving=0
+    # epoch=start_epoch
+    # bests=np.ones(n_mejores,dtype=float)*float('inf')
+    # best_loss=float('inf')
+    # if args.train:
+    #     for i in range(n_mejores):
+    #         np.savetxt( os.path.join(best_save_path, 'best_{}.pth'.format(i)), np.array((0,0)))
+    #     while not_improving<args.num_epochs:
+    #         print('######## Epoca {} ########'.format(epoch))
+    #         train_epoch(train_loader, model, args.lr, optimizer, device)
+    #         val_loss = evaluate_accuracy(dev_loader, model, device)
+    #         if val_loss<best_loss:
+    #             best_loss=val_loss
+    #             torch.save(model.state_dict(), os.path.join(model_save_path, 'best.pth'))
+    #             print('New best epoch')
+    #             not_improving=0
+    #         else:
+    #             not_improving+=1
+    #         for i in range(n_mejores):
+    #             if bests[i]>val_loss:
+    #                 for t in range(n_mejores-1,i,-1):
+    #                     bests[t]=bests[t-1]
+    #                     os.system('mv {}/best_{}.pth {}/best_{}.pth'.format(best_save_path, t-1, best_save_path, t))
+    #                 bests[i]=val_loss
+    #                 torch.save(model.state_dict(), os.path.join(best_save_path, 'best_{}.pth'.format(i)))
+    #                 break
+    #         print('\n{} - {}'.format(epoch, val_loss))
+    #         print('n-best loss:', bests)
+    #         #torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
+    #         epoch+=1
+    #         checkpoint_for_resume = {
+    #             'epoch': epoch,
+    #             'model_state_dict': model.state_dict(),
+    #             'optimizer_state_dict': optimizer.state_dict(),
+    #         }
+    #         torch.save(checkpoint_for_resume, os.path.join(checkpoint_dir, f"newest_checkpoint_for_resume.pth"))
+    #         print('Epoch {}: Saved newest end of epoch checkpoint for resuming training purpose as newest_checkpoint_for_resume.pth,'.format(epoch))
+    #         if epoch>args.num_epochs:
+    #             break
+    #     print('Total epochs: ' + str(epoch) +'\n')
 
     print('######## Eval ########')
     if args.average_model:
