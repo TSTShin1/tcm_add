@@ -287,23 +287,23 @@ if __name__ == '__main__':
         start_epoch = 0
      
     # define train dataloader
-    label_trn, files_id_train = read_metadata(
-    dir_meta=os.path.join(args.protocols_path, 'train.txt'),
-    is_eval=False
-    )
-    print('no. of training trials', len(files_id_train))
+    # label_trn, files_id_train = read_metadata(
+    # dir_meta=os.path.join(args.protocols_path, 'train.txt'),
+    # is_eval=False
+    # )
+    # print('no. of training trials', len(files_id_train))
 
-    # Tạo dataset & dataloader cho training
-    train_set = Dataset_train(
-        args,
-        list_IDs=files_id_train,
-        labels=label_trn,
-        base_dir=os.path.join(args.database_path, 'train_set'),
-        algo=args.algo
-    )
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=10, shuffle=True, drop_last=True)
+    # # Tạo dataset & dataloader cho training
+    # train_set = Dataset_train(
+    #     args,
+    #     list_IDs=files_id_train,
+    #     labels=label_trn,
+    #     base_dir=os.path.join(args.database_path, 'train_set'),
+    #     algo=args.algo
+    # )
+    # train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=10, shuffle=True, drop_last=True)
 
-    del train_set, label_trn
+    # del train_set, label_trn
 
     # Đọc dev metadata từ file txt mới
     labels_dev, files_id_dev = read_metadata(
