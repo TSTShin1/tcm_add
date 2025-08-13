@@ -395,6 +395,9 @@ if __name__ == '__main__':
 
     score_path = 'Scores/LA/{}_private_test.txt'.format(model_tag)
 
+    # ✅ Thêm dòng này để tránh lỗi FileNotFoundError
+    os.makedirs(os.path.dirname(score_path), exist_ok=True)
+
     if not os.path.exists(score_path):
         # Đọc file private_test_vlsp.txt
         file_eval = []
@@ -422,3 +425,4 @@ if __name__ == '__main__':
         )
     else:
         print('Score file already exists')
+
